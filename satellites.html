@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Satellite Watch</title>
+    <link rel="stylesheet" href="./css/tailwind.css" />
+    <link rel="stylesheet" href="./css/satellites.css" />
+    <link rel="stylesheet" href="./css/scrollbar.css" />
+    <link rel="stylesheet" href="./css/mobile-blocker.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  </head>
+  <body class="overflow-hidden">
+    <!-- Splash Screen -->
+    <div
+      id="splashScreen"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black"
+    >
+      <video
+        id="splashVideo"
+        class="w-full h-full object-cover"
+        autoplay
+        muted
+        playsinline
+      >
+        <source
+          src="./assets/splash-video/satellite-watch-splash.mp4"
+          type="video/mp4"
+        />
+      </video>
+    </div>
+
+    <div
+      id="popUpEl"
+      class="bg-black bg-opacity-75 fixed ml-4 px-3 py-2 rounded-lg z-50 pointer-events-none"
+    >
+      <h2 class="text-white text-xs">
+        <span id="satelliteInfoEl"></span>
+      </h2>
+      <p id="satelliteInfoValueEl" class="text-white font-bold text-lg"></p>
+    </div>
+    <div class="xl:flex h-screen bg-black">
+      <div class="xl:w-1/3 h-screen overflow-y-auto px-8 py-10">
+        <div class="max-w-md mx-auto">
+          <h1 class="text-white text-4xl font-bold mb-6 font-exo leading-none">
+            Satellite Watch
+          </h1>
+          <p class="text-gray-400 mb-8 font-exo">
+            Track satellites in real-time over the Earth's surface.
+          </p>
+
+          <!-- Satellite Map -->
+          <div class="mb-8">
+            <h2 class="text-white text-lg font-bold mb-4 font-exo">
+              Satellite Location
+            </h2>
+            <div
+              id="satelliteMap"
+              class="w-full h-48 rounded-lg overflow-hidden bg-gray-800"
+            ></div>
+          </div>
+
+          <!-- Observer Position Inputs -->
+          <div class="mb-8">
+            <h2 class="text-white text-lg font-bold mb-4 font-exo">
+              Observer Position
+            </h2>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-gray-400 text-sm mb-1 font-exo"
+                  >Country</label
+                >
+                <select
+                  id="countrySelect"
+                  class="w-full bg-gray-800 text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select a country...</option>
+                  <!-- Countries will be populated here -->
+                </select>
+              </div>
+              <div>
+                <label class="block text-gray-400 text-sm mb-1 font-exo"
+                  >Latitude</label
+                >
+                <input
+                  type="number"
+                  id="observerLat"
+                  value="41.702"
+                  step="0.001"
+                  class="w-full bg-gray-800 text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label class="block text-gray-400 text-sm mb-1 font-exo"
+                  >Longitude</label
+                >
+                <input
+                  type="number"
+                  id="observerLng"
+                  value="-76.014"
+                  step="0.001"
+                  class="w-full bg-gray-800 text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label class="block text-gray-400 text-sm mb-1 font-exo"
+                  >Altitude (meters)</label
+                >
+                <input
+                  type="number"
+                  id="observerAlt"
+                  value="0"
+                  step="100"
+                  class="w-full bg-gray-800 text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Satellite Search -->
+          <div class="mb-8">
+            <h2 class="text-white text-lg font-bold mb-4 font-exo">
+              Satellite Search
+            </h2>
+            <div class="space-y-4">
+              <div>
+                <input
+                  type="text"
+                  id="satelliteSearch"
+                  placeholder="Search by name or NORAD ID"
+                  class="w-full bg-gray-800 text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  autocomplete="off"
+                />
+              </div>
+              <div
+                id="searchResults"
+                class="max-h-48 overflow-y-auto space-y-2 rounded-lg bg-gray-900 p-2"
+              >
+                <!-- Search results will be populated here -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Above Search -->
+          <div class="mb-8">
+            <h2 class="text-white text-lg font-bold mb-4 font-exo">
+              Satellites Above
+            </h2>
+            <div class="space-y-4">
+              <div>
+                <select
+                  id="categorySelect"
+                  class="w-full bg-gray-800 text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select category...</option>
+                  <!-- Categories will be populated here -->
+                </select>
+              </div>
+              <div>
+                <button
+                  id="searchAbove"
+                  class="w-full bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors font-exo"
+                >
+                  Find Satellites Above
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Select -->
+          <div class="mb-8">
+            <h2 class="text-white text-lg font-bold mb-4 font-exo">
+              Quick Select
+            </h2>
+            <div class="flex flex-col gap-2">
+              <div class="text-white font-exo">Quick Select</div>
+              <button
+                id="showISS"
+                class="w-full bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors font-exo"
+              >
+                Show ISS
+              </button>
+              <button
+                id="showStarlink"
+                class="w-full bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors font-exo"
+              >
+                Show Starlink
+              </button>
+              <button
+                id="showGPS"
+                class="w-full bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors font-exo"
+              >
+                Show GPS
+              </button>
+              <button
+                id="showHEO"
+                class="w-full bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors font-exo"
+              >
+                Show HEO
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="h-screen xl:w-2/3 relative" id="canvas-container">
+        <canvas id="canvas"></canvas>
+        <button
+          id="dayNightToggle"
+          class="absolute top-4 right-4 w-8 h-8 bg-black bg-opacity-50 rounded-full flex items-center justify-center hover:bg-opacity-75 transition-all"
+        >
+          <img
+            src="./assets/icons/night-time-w.png"
+            alt="Toggle day/night"
+            class="w-6 h-6"
+          />
+        </button>
+
+        <!-- Add info icon button -->
+        <a
+          href="./about.html"
+          class="absolute bottom-4 right-4 bg-black bg-opacity-50 p-2 rounded-lg hover:bg-opacity-70 transition-opacity"
+          title="About Satellite Watch"
+        >
+          <img
+            src="./assets/icons/info-fill-white.png"
+            alt="Info"
+            class="w-8 h-8 opacity-40 hover:opacity-80 transition-opacity"
+          />
+        </a>
+
+        <div
+          id="legend"
+          class="absolute bottom-4 left-4 bg-black bg-opacity-50 p-3 rounded-lg text-white text-sm font-exo"
+        >
+          <div class="flex items-center space-x-2 mb-2">
+            <div
+              class="w-3 h-3 rounded-full"
+              style="background-color: #f9ff50"
+            ></div>
+            <span>Observer</span>
+          </div>
+          <div class="flex items-center space-x-2 mb-2">
+            <div
+              class="w-3 h-3 rounded-full"
+              style="background-color: #ffc0cb"
+            ></div>
+            <span>LEO Satellites</span>
+          </div>
+          <div class="flex items-center space-x-2 mb-2">
+            <div
+              class="w-3 h-3 rounded-full"
+              style="background-color: #ff4500"
+            ></div>
+            <span>MEO Satellites</span>
+          </div>
+          <div class="flex items-center space-x-2 mb-2">
+            <div
+              class="w-3 h-3 rounded-full"
+              style="background-color: #3bf7ff"
+            ></div>
+            <span>GEO Satellites</span>
+          </div>
+          <div class="flex items-center space-x-2 mb-2">
+            <div
+              class="w-3 h-3 rounded-full"
+              style="background-color: #ff00ff"
+            ></div>
+            <span>HEO Satellites</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <div
+              class="w-3 h-3 rounded-full"
+              style="background-color: #ffffff"
+            ></div>
+            <span>Direction of Motion</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12/dist/gsap.min.js"></script>
+    <script type="module" src="./satellites.js?v=2"></script>
+    <script type="module" src="./js/mobile-blocker.js"></script>
+  </body>
+</html>

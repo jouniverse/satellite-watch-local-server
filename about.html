@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About - Satellite Watch</title>
+    <link rel="stylesheet" href="./css/tailwind.css" />
+    <link rel="stylesheet" href="./css/satellites.css" />
+    <link rel="stylesheet" href="./css/scrollbar.css" />
+    <link rel="stylesheet" href="./css/mobile-blocker.css" />
+  </head>
+  <body class="bg-black text-white min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-3xl">
+      <div class="flex items-center mb-8">
+        <a href="./satellites.html" class="mr-4">
+          <img
+            src="./assets/icons/satellite-white.png"
+            alt="Back"
+            class="w-6 h-6"
+          />
+        </a>
+        <h1 class="text-4xl font-bold font-exo">About Satellite Watch</h1>
+      </div>
+
+      <div class="mb-8">
+        <a
+          href="./satellites.html"
+          class="inline-flex items-center px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors font-exo"
+        >
+          <img
+            src="./assets/icons/arrow-left-white.png"
+            alt="Back"
+            class="w-4 h-4 mr-2"
+          />
+          Back to Satellite Watch
+        </a>
+      </div>
+
+      <div class="space-y-6 font-exo">
+        <section>
+          <h2 class="text-2xl font-bold mb-4">How It Works</h2>
+          <p class="text-gray-300 mb-4">
+            Satellite Watch is a real-time visualization tool that shows the
+            positions of satellites orbiting Earth. The app uses a 3D globe to
+            display satellite positions and provides a 2D map view for
+            additional context. N2YO API key is needed to access real-time
+            satellite position data.
+          </p>
+          <p class="text-gray-300">You can:</p>
+          <ul class="list-disc list-inside text-gray-300 ml-4 mt-2 space-y-2">
+            <li>Search for specific satellites by name or NORAD ID</li>
+            <li>View satellites currently above your location</li>
+            <li>Track the International Space Station (ISS)</li>
+            <li>Monitor Starlink and GPS satellites</li>
+            <li>Switch between day and night views of Earth</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold mb-4">Data Sources</h2>
+          <div class="space-y-4">
+            <div>
+              <h3 class="text-xl font-bold mb-2">Celestrak API</h3>
+              <p class="text-gray-300">
+                The list of active satellites is fetched from Celestrak's
+                database, which maintains the most comprehensive catalog of
+                Earth-orbiting objects. This data includes satellite names,
+                NORAD IDs, and orbital parameters.
+              </p>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold mb-2">N2YO API</h3>
+              <p class="text-gray-300">
+                Real-time satellite positions are obtained from N2YO's API,
+                which provides accurate position data based on Two-Line Element
+                Sets (TLEs). The API returns satellite positions, altitudes, and
+                other orbital parameters. The data is updated every 10 seconds
+                to provide near real-time satellite tracking.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold mb-4">Visualization</h2>
+          <p class="text-gray-300 mb-4">
+            The app uses Three.js for 3D visualization and Leaflet.js for the 2D
+            map view. Satellites are color-coded based on their orbit type:
+          </p>
+          <ul class="list-disc list-inside text-gray-300 ml-4 space-y-2">
+            <li>
+              <span class="text-[#ffc0cb]">Pink</span> - Low Earth Orbit (LEO)
+              satellites (160-2000 km)
+            </li>
+            <li>
+              <span class="text-[#ff4500]">Orange-red</span> - Medium Earth
+              Orbit (MEO) satellites (5000-20000 km)
+            </li>
+            <li>
+              <span class="text-[#3bf7ff]">Azure</span> - Geosynchronous Orbit
+              (GEO) satellites (~35786 km) satellites
+            </li>
+            <li>
+              <span class="text-[#ff00ff]">Magenta</span> - Highly Elliptical
+              Orbit (HEO) satellites
+            </li>
+            <li>
+              <span class="text-white">White dot</span> - Direction of satellite
+              motion
+            </li>
+            <li>
+              <span class="text-[#f9ff50]">Yellow-Green dot</span> - Observer's
+              position
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold mb-4">Technical Details</h2>
+          <p class="text-gray-300">
+            The app is built using vanilla JavaScript and modern web
+            technologies. It uses Three.js for 3D rendering, Leaflet.js for map
+            visualization, and GSAP for smooth animations.
+          </p>
+        </section>
+      </div>
+    </div>
+    <script type="module" src="./js/mobile-blocker.js"></script>
+  </body>
+</html>

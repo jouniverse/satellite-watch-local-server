@@ -1,0 +1,222 @@
+[
+  {
+    "Category": "Amateur radio",
+    "id": "18"
+  },
+  {
+    "Category": "Beidou Navigation System",
+    "id": "35"
+  },
+  {
+    "Category": "Brightest",
+    "id": "1"
+  },
+  {
+    "Category": "Celestis",
+    "id": "45"
+  },
+  {
+    "Category": "Chinese Space Station",
+    "id": "54"
+  },
+  {
+    "Category": "CubeSats",
+    "id": "32"
+  },
+  {
+    "Category": "Disaster monitoring",
+    "id": "8"
+  },
+  {
+    "Category": "Earth resources",
+    "id": "6"
+  },
+  {
+    "Category": "Education",
+    "id": "29"
+  },
+  {
+    "Category": "Engineering",
+    "id": "28"
+  },
+  {
+    "Category": "Experimental",
+    "id": "19"
+  },
+  {
+    "Category": "Flock",
+    "id": "48"
+  },
+  {
+    "Category": "Galileo",
+    "id": "22"
+  },
+  {
+    "Category": "Geodetic",
+    "id": "27"
+  },
+  {
+    "Category": "Geostationary",
+    "id": "10"
+  },
+  {
+    "Category": "Global Positioning System (GPS) Constellation",
+    "id": "50"
+  },
+  {
+    "Category": "Global Positioning System (GPS) Operational",
+    "id": "20"
+  },
+  {
+    "Category": "Globalstar",
+    "id": "17"
+  },
+  {
+    "Category": "Glonass Constellation",
+    "id": "51"
+  },
+  {
+    "Category": "Glonass Operational",
+    "id": "21"
+  },
+  {
+    "Category": "GOES",
+    "id": "5"
+  },
+  {
+    "Category": "Gonets",
+    "id": "40"
+  },
+  {
+    "Category": "Gorizont",
+    "id": "12"
+  },
+  {
+    "Category": "Intelsat",
+    "id": "11"
+  },
+  {
+    "Category": "Iridium",
+    "id": "15"
+  },
+  {
+    "Category": "IRNSS",
+    "id": "46"
+  },
+  {
+    "Category": "ISS",
+    "id": "2"
+  },
+  {
+    "Category": "Lemur",
+    "id": "49"
+  },
+  {
+    "Category": "Military",
+    "id": "30"
+  },
+  {
+    "Category": "Molniya",
+    "id": "14"
+  },
+  {
+    "Category": "Navy Navigation Satellite System",
+    "id": "24"
+  },
+  {
+    "Category": "NOAA",
+    "id": "4"
+  },
+  {
+    "Category": "O3B Networks",
+    "id": "43"
+  },
+  {
+    "Category": "OneWeb",
+    "id": "53"
+  },
+  {
+    "Category": "Orbcomm",
+    "id": "16"
+  },
+  {
+    "Category": "Parus",
+    "id": "38"
+  },
+  {
+    "Category": "Qianfan",
+    "id": "55"
+  },
+  {
+    "Category": "QZSS",
+    "id": "47"
+  },
+  {
+    "Category": "Radar Calibration",
+    "id": "31"
+  },
+  {
+    "Category": "Raduga",
+    "id": "13"
+  },
+  {
+    "Category": "Russian LEO Navigation",
+    "id": "25"
+  },
+  {
+    "Category": "Satellite-Based Augmentation System",
+    "id": "23"
+  },
+  {
+    "Category": "Search & rescue",
+    "id": "7"
+  },
+  {
+    "Category": "Space & Earth Science",
+    "id": "26"
+  },
+  {
+    "Category": "Starlink",
+    "id": "52"
+  },
+  {
+    "Category": "Strela",
+    "id": "39"
+  },
+  {
+    "Category": "Tracking and Data Relay Satellite System",
+    "id": "9"
+  },
+  {
+    "Category": "Tselina",
+    "id": "44"
+  },
+  {
+    "Category": "Tsikada",
+    "id": "42"
+  },
+  {
+    "Category": "Tsiklon",
+    "id": "41"
+  },
+  {
+    "Category": "TV",
+    "id": "34"
+  },
+  {
+    "Category": "Weather",
+    "id": "3"
+  },
+  {
+    "Category": "Westford Needles",
+    "id": "37"
+  },
+  {
+    "Category": "XM and Sirius",
+    "id": "33"
+  },
+  {
+    "Category": "Yaogan",
+    "id": "36"
+  }
+]

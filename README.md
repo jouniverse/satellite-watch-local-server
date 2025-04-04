@@ -1,6 +1,6 @@
 # Satellite Watch
 
-A real-time satellite tracking visualization tool that displays satellite positions over a 3D Earth globe. The application provides both 3D and 2D views of all active satellite positions, allowing users to track various satellites including the ISS, Starlink satellites, and amateur radio satellites. It is also possible to find inactive satellites above the observer's location with the application. An N2YO API key is required to access real-time satellite position data (see Data Sources below).
+[Satellite Watch](https://satellite-watch.vercel.app/satellites.html) is real-time satellite tracking visualization tool that displays satellite positions over a 3D Earth globe. The application provides both 3D and 2D views of all active satellite positions, allowing users to track various satellites including the ISS, Starlink satellites, and amateur radio satellites. It is also possible to find inactive satellites above the observer's location with the application. An N2YO API key is required to access real-time satellite position data (see Data Sources below).
 
 ## Features
 

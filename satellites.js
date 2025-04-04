@@ -75,7 +75,12 @@ function updateMap(
   observerLng,
   satelliteColor = ORBIT_COLORS.DEFAULT
 ) {
-  if (satelliteMarker) {
+  // If satellite coordinates are provided, update satellite marker
+  if (
+    satelliteLat !== undefined &&
+    satelliteLng !== undefined &&
+    satelliteMarker
+  ) {
     // Update marker position and color
     satelliteMarker.setLatLng([satelliteLat, satelliteLng]);
     const icon = satelliteMarker.getIcon();
@@ -83,12 +88,18 @@ function updateMap(
       .toString(16)
       .padStart(6, "0")}"></div>`;
     satelliteMarker.setIcon(icon);
+    // Center map on satellite position
+    satelliteMap.setView([satelliteLat, satelliteLng], 2);
   }
-  if (mapObserverMarker) {
+
+  // Always update observer marker if coordinates are provided
+  if (
+    observerLat !== undefined &&
+    observerLng !== undefined &&
+    mapObserverMarker
+  ) {
     mapObserverMarker.setLatLng([observerLat, observerLng]);
   }
-  // Center map on satellite position
-  satelliteMap.setView([satelliteLat, satelliteLng], 2);
 }
 
 // Add this fetch for the satellites data
@@ -229,13 +240,33 @@ const ORBIT_HEIGHTS = {
 };
 
 // Function to determine orbit type based on altitude and eccentricity
-function getOrbitType(altitude, eccentricity = 0) {
-  // Check for HEO first based on eccentricity
-  if (eccentricity > 0.1) return "HEO";
+function getOrbitType(altitude, eccentricity = 0, isActive = false) {
+  // For active satellites, check eccentricity first
+  if (isActive && eccentricity > 0.1) {
+    // console.log(
+    //   `Classifying as HEO (active satellite with high eccentricity): altitude=${altitude}, eccentricity=${eccentricity}`
+    // );
+    return "HEO";
+  }
+
+  // For inactive satellites, check altitude
+  if (!isActive && altitude > 40000) {
+    // console.log(
+    //   `Classifying as HEO (inactive satellite with high altitude): altitude=${altitude}, eccentricity=${eccentricity}`
+    // );
+    return "HEO";
+  }
 
   // If not HEO, classify based on altitude
-  if (altitude <= 2000) return "LEO";
-  if (altitude <= 22000) return "MEO";
+  if (altitude <= 2000) {
+    // console.log(`Classifying as LEO: altitude=${altitude}`);
+    return "LEO";
+  }
+  if (altitude <= 22000) {
+    // console.log(`Classifying as MEO: altitude=${altitude}`);
+    return "MEO";
+  }
+  // console.log(`Classifying as GEO: altitude=${altitude}`);
   return "GEO";
 }
 
@@ -269,7 +300,12 @@ function createSatellite({
   eccentricity = 0, // Add eccentricity parameter
 }) {
   // Determine orbit type and color using both altitude and eccentricity
-  const orbitType = getOrbitType(altitude, eccentricity);
+  const isActive = status === "active";
+  const orbitType = getOrbitType(altitude, eccentricity, isActive);
+  console.log(
+    `Creating satellite ${name} (${noradId}): altitude=${altitude}, eccentricity=${eccentricity}, isActive=${isActive}, orbitType=${orbitType}`
+  );
+
   const color = ORBIT_COLORS[orbitType] || ORBIT_COLORS.DEFAULT;
   const orbitHeight = ORBIT_HEIGHTS[orbitType] || ORBIT_HEIGHTS.DEFAULT;
 
@@ -310,6 +346,8 @@ function createSatellite({
   satelliteGroup.orbitHeight = orbitHeight;
   satelliteGroup.color = color; // Store the color for map marker
   satelliteGroup.status = status; // Store the status
+  satelliteGroup.altitude = altitude; // Store the altitude
+  satelliteGroup.eccentricity = eccentricity; // Store the eccentricity
 
   return satelliteGroup;
 }
@@ -354,10 +392,10 @@ function displaySearchResults(results, autoSelectFirst = false) {
 
 // Function to update tooltip information
 function updateTooltipInfo(satelliteGroup, position) {
-  console.log("Updating tooltip with status:", {
-    positionStatus: position.status,
-    satelliteGroupStatus: satelliteGroup.status,
-  });
+  // console.log("Updating tooltip with status:", {
+  //   positionStatus: position.status,
+  //   satelliteGroupStatus: satelliteGroup.status,
+  // });
 
   document.getElementById(
     "satelliteInfoEl"
@@ -376,6 +414,9 @@ function updateTooltipInfo(satelliteGroup, position) {
      <div class="text-sm">Lat: ${position.satlatitude.toFixed(2)}°</div>
      <div class="text-sm">Lng: ${position.satlongitude.toFixed(2)}°</div>
      <div class="text-sm">Alt: ${position.sataltitude.toFixed(1)} km</div>
+     <div class="text-sm">Eccentricity: ${satelliteGroup.eccentricity.toFixed(
+       4
+     )}</div>
      <div class="text-sm">Az: ${position.azimuth.toFixed(1)}°</div>
      <div class="text-sm">El: ${position.elevation.toFixed(1)}°</div>
      <div class="text-sm">Time: ${utcDate}</div>`;
@@ -588,13 +629,33 @@ function selectSatellite(satelliteData) {
     group.remove(satellite);
   }
 
-  // Calculate altitude from mean motion (approximate)
-  const meanMotion = satelliteData.MEAN_MOTION;
-  const altitude =
-    Math.pow(
-      398600.4418 / Math.pow((meanMotion * 2 * Math.PI) / 86400, 2),
-      1 / 3
-    ) - 6378.137;
+  // Get altitude from satellite data if available, otherwise calculate from mean motion
+  let altitude;
+  if (satelliteData.ALTITUDE) {
+    // Use the altitude directly if available (from searchSatellitesAbove)
+    altitude = satelliteData.ALTITUDE;
+    // console.log(`Using direct altitude from satellite data: ${altitude} km`);
+  } else {
+    // Calculate altitude from mean motion (approximate)
+    const meanMotion = satelliteData.MEAN_MOTION;
+    altitude =
+      Math.pow(
+        398600.4418 / Math.pow((meanMotion * 2 * Math.PI) / 86400, 2),
+        1 / 3
+      ) - 6378.137;
+    // console.log(`Calculated altitude from mean motion: ${altitude} km`);
+  }
+
+  // Get eccentricity from satellite data
+  const eccentricity = satelliteData.ECCENTRICITY || 0;
+  // console.log(`Using eccentricity: ${eccentricity}`);
+
+  // Log the classification for debugging
+  const isActive = satelliteData.STATUS === "active";
+  const orbitType = getOrbitType(altitude, eccentricity, isActive);
+  // console.log(
+  //   `Satellite ${satelliteData.OBJECT_NAME} (${satelliteData.NORAD_CAT_ID}): altitude=${altitude}, eccentricity=${eccentricity}, isActive=${isActive}, classified as ${orbitType}`
+  // );
 
   // Create new satellite with calculated altitude and eccentricity
   satellite = createSatellite({
@@ -604,7 +665,7 @@ function selectSatellite(satelliteData) {
     noradId: satelliteData.NORAD_CAT_ID,
     altitude: altitude,
     status: satelliteData.STATUS || "inactive",
-    eccentricity: satelliteData.ECCENTRICITY || 0, // Add eccentricity
+    eccentricity: eccentricity,
   });
 
   group.add(satellite);
@@ -690,17 +751,39 @@ async function searchSatellitesAbove(categoryId = "") {
 
     // Convert the response to match our satellite data format
     const satellites = data.above.map((sat) => {
+      // Get the altitude from the API response
+      const altitude = sat.satalt;
+
       // Calculate mean motion based on altitude
       // For circular orbits: meanMotion = sqrt(398600.4418 / (altitude + 6378.137)^3) * 86400 / (2π)
-      const altitude = sat.satalt;
       const meanMotion =
         (Math.sqrt(398600.4418 / Math.pow(altitude + 6378.137, 3)) * 86400) /
         (2 * Math.PI);
 
-      // Check if satellite is active
-      const isActive = activeSatellites.some(
+      // Try to find matching satellite in active satellites list
+      const matchingActiveSat = activeSatellites.find(
         (activeSat) => activeSat.NORAD_CAT_ID === sat.satid
       );
+
+      // Determine if satellite is active
+      const isActive = !!matchingActiveSat;
+
+      // Use eccentricity from matching active satellite if available, otherwise use default
+      let eccentricity = 0.0001; // Default to near-circular orbit
+
+      if (matchingActiveSat) {
+        // Use the actual eccentricity from the active satellite
+        eccentricity = matchingActiveSat.ECCENTRICITY || 0.0001;
+        // console.log(
+        //   `Found matching active satellite: ${matchingActiveSat.OBJECT_NAME}, eccentricity: ${eccentricity}`
+        // );
+      }
+
+      // Log the classification for debugging
+      const orbitType = getOrbitType(altitude, eccentricity, isActive);
+      // console.log(
+      //   `Satellite ${sat.satname} (${sat.satid}): altitude=${altitude}, eccentricity=${eccentricity}, isActive=${isActive}, classified as ${orbitType}`
+      // );
 
       return {
         OBJECT_NAME: sat.satname,
@@ -708,7 +791,7 @@ async function searchSatellitesAbove(categoryId = "") {
         MEAN_MOTION: meanMotion,
         // Add other required fields with calculated values
         EPOCH: new Date().toISOString(),
-        ECCENTRICITY: 0.0001, // Assuming near-circular orbit
+        ECCENTRICITY: eccentricity,
         INCLINATION: altitude > 35786 ? 0 : 90, // GEO satellites have 0° inclination
         RA_OF_ASC_NODE: 0,
         ARG_OF_PERICENTER: 0,
@@ -721,6 +804,8 @@ async function searchSatellitesAbove(categoryId = "") {
         MEAN_MOTION_DOT: 0,
         MEAN_MOTION_DDOT: 0,
         STATUS: isActive ? "active" : "inactive",
+        // Add altitude for direct access
+        ALTITUDE: altitude,
       };
     });
 
@@ -748,6 +833,7 @@ async function searchSatellitesAbove(categoryId = "") {
       MEAN_MOTION_DOT: 0,
       MEAN_MOTION_DDOT: 0,
       STATUS: "inactive", // Mock satellites are always inactive
+      ALTITUDE: 400 + i * 100, // Add some altitude variation
     }));
     displaySearchResults(mockSatellites);
   }
@@ -933,7 +1019,7 @@ async function init() {
         );
       } else {
         // If no satellite is selected, just update the map with the new observer position
-        updateMap(0, 0);
+        updateMap(undefined, undefined, lat, lng);
       }
     });
   });

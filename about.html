@@ -102,7 +102,8 @@
             </li>
             <li>
               <span class="text-[#ff00ff]">Magenta</span> - Highly Elliptical
-              Orbit (HEO) satellites
+              Orbit (HEO) satellites (high eccentricity > 0.1 or altitude >
+              40000 km)
             </li>
             <li>
               <span class="text-white">White dot</span> - Direction of satellite
@@ -113,6 +114,13 @@
               position
             </li>
           </ul>
+          <p class="text-gray-300 mt-4">
+            <strong>Note:</strong> For satellites found using the "Find
+            Satellites Above" button, classification is based on both altitude
+            and eccentricity. Satellites with very high altitudes (> 40000 km)
+            are classified as HEO. For active satellites, the actual
+            eccentricity from Celestrak data is used for classification.
+          </p>
         </section>
 
         <section>
